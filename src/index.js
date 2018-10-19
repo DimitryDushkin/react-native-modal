@@ -170,7 +170,7 @@ class ReactNativeModal extends Component {
       this.open();
     } else if (!this.props.isVisible && prevProps.isVisible) {
       // On modal close request, we slide the view down and fade out the backdrop
-      this.close();
+      this._close();
     }
   }
 
@@ -230,6 +230,10 @@ class ReactNativeModal extends Component {
             this.inSwipeClosingState = true;
             this.props.onSwipe();
             return;
+          }
+        } else {
+          if (this.props.onPress) {
+            this.props.onPress();
           }
         }
         //Reset backdrop opacity and modal position
@@ -336,21 +340,21 @@ class ReactNativeModal extends Component {
       this.state.pan.setValue({ x: 0, y: 0 });
     }
 
-    if (this.contentRef) {
-      this.contentRef[this.animationIn](this.props.animationInTiming).then(
-        () => {
-          this.transitionLock = false;
-          if (!this.props.isVisible) {
-            this.close();
-          } else {
-            this.props.onModalShow();
-          }
-        }
-      );
+    // if (this.contentRef) {
+    //   this.contentRef[this.animationIn](this.props.animationInTiming).then(
+    //     () => {
+    this.transitionLock = false;
+    if (!this.props.isVisible) {
+      this._close();
+    } else {
+      this.props.onModalShow();
     }
+    //     }
+    //   );
+    // }
   };
 
-  close = () => {
+  _close = () => {
     if (this.transitionLock) return;
     this.transitionLock = true;
     if (this.backdropRef) {
@@ -434,12 +438,12 @@ class ReactNativeModal extends Component {
 
     const _children =
       this.props.hideModalContentWhileAnimating &&
-      this.props.useNativeDriver &&
-      !this.state.showContent ? (
-        <View />
-      ) : (
-        children
-      );
+        this.props.useNativeDriver &&
+        !this.state.showContent ? (
+          <View />
+        ) : (
+          children
+        );
     const containerView = (
       <View
         {...panHandlers}
@@ -456,7 +460,7 @@ class ReactNativeModal extends Component {
     return (
       <Modal
         transparent={true}
-        animationType={"none"}
+        animationType="fade"
         visible={this.state.isVisible}
         onRequestClose={onBackButtonPress}
         {...otherProps}
@@ -464,7 +468,6 @@ class ReactNativeModal extends Component {
         <TouchableWithoutFeedback onPress={onBackdropPress}>
           <View
             ref={ref => (this.backdropRef = ref)}
-            useNativeDriver={useNativeDriver}
             style={[
               styles.backdrop,
               {
