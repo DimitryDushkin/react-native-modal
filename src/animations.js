@@ -8,10 +8,12 @@ const { height, width } = Dimensions.get("window");
 const makeSlideTranslation = (translationType, fromValue, toValue) => {
   return {
     from: {
-      [translationType]: fromValue
+      [translationType]: fromValue,
+      scale: 1,
     },
     to: {
-      [translationType]: toValue
+      [translationType]: toValue,
+      scale: .8
     }
   };
 };

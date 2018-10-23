@@ -83,7 +83,6 @@ class ReactNativeModal extends Component {
     onModalHide: () => null,
     isVisible: false,
     hideModalContentWhileAnimating: false,
-    onBackdropPress: () => null,
     onBackButtonPress: () => null,
     swipeThreshold: 100,
     useNativeDriver: false,
@@ -385,16 +384,10 @@ class ReactNativeModal extends Component {
         if (this.props.isVisible) {
           this.open();
         } else {
-          this.setState(
-            {
-              showContent: false
-            },
-            () => {
-              this.setState({
-                isVisible: false
-              });
-            }
-          );
+          this.setState({
+            showContent: false,
+            isVisible: false,
+          });
           this.props.onModalHide();
         }
       });
@@ -457,6 +450,23 @@ class ReactNativeModal extends Component {
       </View>
     );
 
+    const backdrop = (
+      <View
+        ref={ref => (this.backdropRef = ref)}
+        style={[
+          styles.backdrop,
+          {
+            backgroundColor: this.state.showContent
+              ? backdropColor
+              : "transparent",
+            width: deviceWidth,
+            height: deviceHeight,
+          }
+        ]}
+        pointerEvents="none"
+      />
+    );
+
     return (
       <Modal
         transparent={true}
@@ -465,21 +475,14 @@ class ReactNativeModal extends Component {
         onRequestClose={onBackButtonPress}
         {...otherProps}
       >
-        <TouchableWithoutFeedback onPress={onBackdropPress}>
-          <View
-            ref={ref => (this.backdropRef = ref)}
-            style={[
-              styles.backdrop,
-              {
-                backgroundColor: this.state.showContent
-                  ? backdropColor
-                  : "transparent",
-                width: deviceWidth,
-                height: deviceHeight
-              }
-            ]}
-          />
-        </TouchableWithoutFeedback>
+        {onBackdropPress
+          ? (
+            <TouchableWithoutFeedback onPress={onBackdropPress}>
+              {backdrop}
+            </TouchableWithoutFeedback>
+          )
+          : backdrop
+        }
 
         {avoidKeyboard && (
           <KeyboardAvoidingView
