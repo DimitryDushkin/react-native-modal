@@ -453,16 +453,7 @@ class ReactNativeModal extends Component {
     const backdrop = (
       <View
         ref={ref => (this.backdropRef = ref)}
-        style={[
-          styles.backdrop,
-          {
-            backgroundColor: this.state.showContent
-              ? backdropColor
-              : "transparent",
-            width: deviceWidth,
-            height: deviceHeight,
-          }
-        ]}
+        style={styles.backdrop}
         pointerEvents="none"
       />
     );
@@ -470,6 +461,7 @@ class ReactNativeModal extends Component {
     return (
       <Modal
         transparent={true}
+        presentationStyle="overFullScreen"
         animationType="fade"
         visible={this.state.isVisible}
         onRequestClose={onBackButtonPress}
